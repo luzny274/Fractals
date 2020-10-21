@@ -16,6 +16,8 @@ class SkyBrot : public buf::Fractal{
         float speed = 2.f;
         float scaleSpeed = 10.f;
 
+        float w = 0.1f;
+
         float FOV = 50.f;
 
     public:
@@ -47,7 +49,9 @@ class SkyBrot : public buf::Fractal{
                     c = vec4(0.0);
                     //c.xyw = dir;
                     //c.xzw = dir;
-                    c = dir.xyzx;
+                    c = vec4(dir.xyz, blb);
+                    //c.w = blb;
+                    //c = normalize(c);
                     //c.wyxz = dir.xyzy;
 
                     c *= scale;
@@ -77,10 +81,10 @@ class SkyBrot : public buf::Fractal{
             time += dt;
 
             
-            if(ulm::Window::keysPressed[ulm::SCANCODE_LEFT])   camera.yaw( dt * speed * scale);            
-            if(ulm::Window::keysPressed[ulm::SCANCODE_RIGHT])  camera.yaw(-dt * speed * scale);                
-            if(ulm::Window::keysPressed[ulm::SCANCODE_UP])     camera.pitch( dt * speed * scale);            
-            if(ulm::Window::keysPressed[ulm::SCANCODE_DOWN])   camera.pitch(-dt * speed * scale);
+            if(ulm::Window::keysPressed[ulm::SCANCODE_LEFT])   camera.yaw( dt * speed);            
+            if(ulm::Window::keysPressed[ulm::SCANCODE_RIGHT])  camera.yaw(-dt * speed);                
+            if(ulm::Window::keysPressed[ulm::SCANCODE_UP])     camera.pitch( dt * speed);            
+            if(ulm::Window::keysPressed[ulm::SCANCODE_DOWN])   camera.pitch(-dt * speed);
 
             if(ulm::Window::wheel.dy > 0)
                 scale -= scaleSpeed * dt;
@@ -96,12 +100,13 @@ class SkyBrot : public buf::Fractal{
             shader.setInt("iter", maxIter);
             shader.setFloat("scale", scale);
             shader.setFloat("time", time);
+            shader.setFloat("blb", w);
 
             shader.ST_draw();
         }
 
         void gui(){
-            if (nk_begin(ulm::NK::ctx, "SkyBrot", nk_rect(20, 400, 400, 300),
+            if (nk_begin(ulm::NK::ctx, "SkyBrot", nk_rect(20, 400, 600, 300),
                 NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
                 NK_WINDOW_CLOSABLE|NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
             {
@@ -118,9 +123,10 @@ class SkyBrot : public buf::Fractal{
                 sprintf(txt, "Scale: %f", scale);
                 nk_label_wrap(ulm::NK::ctx, txt);
 
-                nk_layout_row_dynamic(ulm::NK::ctx, 30, 2); 
+                nk_layout_row_dynamic(ulm::NK::ctx, 30, 1); 
                 sprintf(txt, "FOV %.2f : ", FOV);
-                nk_label_wrap(ulm::NK::ctx, txt); nk_slider_float(ulm::NK::ctx, 10.0f, &FOV, 140.f, 0.01f);
+                nk_layout_row_dynamic(ulm::NK::ctx, 30, 1); 
+                nk_label_wrap(ulm::NK::ctx, txt); nk_slider_float(ulm::NK::ctx, 0.1f, &FOV, 140.f, 0.01f);
 
                 
                 nk_layout_row_dynamic(ulm::NK::ctx, 30, 2); 
@@ -134,6 +140,10 @@ class SkyBrot : public buf::Fractal{
                 nk_layout_row_dynamic(ulm::NK::ctx, 30, 2); 
                 sprintf(txt, "Scale speed %.2f : ", scaleSpeed);
                 nk_label_wrap(ulm::NK::ctx, txt); nk_slider_float(ulm::NK::ctx, 0.1f, &scaleSpeed, 100.f, 0.01f);
+
+                nk_layout_row_dynamic(ulm::NK::ctx, 30, 2); 
+                sprintf(txt, "W %.2f : ", w);
+                nk_label_wrap(ulm::NK::ctx, txt); nk_slider_float(ulm::NK::ctx, -2.0f, &w, 2.f, 0.01f);
 
             }
             nk_end(ulm::NK::ctx);

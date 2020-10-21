@@ -3,6 +3,7 @@
 #include "fractal.cpp"
 #include "mandelbrot.cpp"
 #include "LuzneuxDizov.cpp"
+#include "LuzneuxDizov2.cpp"
 #include "skyBrot.cpp"
 
 ulm::Array<buf::Fractal*> fractals;
@@ -12,6 +13,8 @@ char fractalNames[1024];
 void initFractals(){
     fractals.add((buf::Fractal*)new Mandelbrot());
     fractals.add((buf::Fractal*)new SkyBrot());
+    fractals.add((buf::Fractal*)new LuzneuxDizovSQ2());
+    fractals.add((buf::Fractal*)new LuzneuxDizovPoly());
     fractals.add((buf::Fractal*)new LuzneuxDizovSQ());
 
     int ii = 0;
